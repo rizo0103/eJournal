@@ -1,7 +1,23 @@
-const b1 = 10;
+const mysql = require('mysql');
 
-if (b1 == 10) {
-    console.log("true");
-} else {
-    console.log("false");
-}
+// creating connection
+const connection = mysql.createConnection({
+    host: 'localhost',
+    port: '3306',
+    user: 'root',
+    password: 'root',
+    database: 'groups',
+    connectionLimit: 10,
+});
+
+// connecting to db
+connection.connect(err => {
+    if (err) {
+        console.error('Error while connecting to db: ', err.stack);
+        return ;
+    }
+    console.log('Connected to db via id: ' + connection.threadId);
+});
+
+module.exports = connection;
+

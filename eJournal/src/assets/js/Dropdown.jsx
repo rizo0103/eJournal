@@ -11,11 +11,11 @@ const Dropdown = ({ message, sendData }) => {
     // </div>
     const [ height, setHeight ] = useState(0);
     const [ groups, setGroups ] = useState([]);
-    const [ openGroupMenu, setOpenGroupMenu ] = useState(true);
+    // const [ openGroupMenu, setOpenGroupMenu ] = useState(true);
 
     const onChange = (e) => {
         if (e.target.checked) {
-            setHeight(groups.length * 50 + 50);
+            setHeight(groups.length * 50);
         } else {
             setHeight(0);
         }
@@ -33,12 +33,12 @@ const Dropdown = ({ message, sendData }) => {
             <label htmlFor="touch"><span className='title'>Groups</span></label>               
             <input type="checkbox" id="touch" onChange={onChange} />
             <ul className="slide" style={{ height: `${height}px` }}>
-                <li onClick={() => {
+                {/* <li onClick={() => {
                     setOpenGroupMenu(!openGroupMenu);
                     sendData(openGroupMenu);
                     }}> 
                     <a href='#'> Add Group </a>
-                </li>
+                </li> */}
                 {groups.map(group => {
                     return (
                         <li key={group}> <a href='#'> {group} </a> </li>

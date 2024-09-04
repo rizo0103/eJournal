@@ -1,7 +1,7 @@
 // server.js
 
 const express = require('express');
-const connection = require('./db.js');
+const connection = require('../database/db.js');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const fileManager = require('express-fileupload');
