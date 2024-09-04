@@ -9,6 +9,7 @@ const morgan = require('morgan');
 
 // importing routes
 const userSettingsRoutes = require('../routes/user-settings.js');
+const groupsSettingsRoutes = require('../routes/groups-settings.js');
 
 const app = express();
 const port = 5174;
@@ -20,6 +21,7 @@ app.use(morgan('dev'));
 app.use(fileManager());
 app.use(bodyParser.json());
 app.use('/', userSettingsRoutes);
+app.use('/', groupsSettingsRoutes);
 
 app.listen(port, () => {
     console.log(`Server listens http://localhost:${port}`);
