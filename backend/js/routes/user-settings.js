@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express();
 const jwt = require('jsonwebtoken');
-const connection = require('../database/db');
+const connection = require('../database/teachers');
 
 const img_dir = '../../../eJournal/public/images/';
 
