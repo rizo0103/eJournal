@@ -15,20 +15,13 @@ router.get('/get-group-data', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        return res.json(results);
+        return res.status(200).json({ message: 'Successfully get group data', data: results });
     });
 });
 
 router.post('/add-student', (req, res) => {
     const table = req.headers['table-name'];
     const { fName, lName, presentDays } = req.body;
-    // const fName = 'rizo';
-    // const lName = 'shokiri';
-    // const presentDays = {
-    //     semester1: {
-    //         september: [1, 2, 3],
-    //     },
-    // };
 
     if (!table || !fName || !lName || !presentDays) {
         return res.status(400).send('Missing required fields');

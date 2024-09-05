@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import '../css/dropdown.css';
-import down from '../ico/down.png';
+import { backend } from '../template';
 
 const Dropdown = ({ message, sendData }) => {
     // <div className='dropdown'>
@@ -21,9 +21,22 @@ const Dropdown = ({ message, sendData }) => {
         }
     }
 
+    const getGroupData = (group) => {
+
+        fetch(`${backend}get-group-data`, {
+            method: 'GET',
+            headers: {
+                'table-name': group,
+            },
+        })
+        .then(res => res.json())
+        .then(data => {sendData({ name: group, data: data.data })})
+        .catch(err => console.error(err));
+    }
+
     useEffect(() => {
         if (message) {
-            const str = message.slice(1);
+            const str = message;
             setGroups(str.split(' '));
         }
     }, [message]);
@@ -41,7 +54,7 @@ const Dropdown = ({ message, sendData }) => {
                 </li> */}
                 {groups.map(group => {
                     return (
-                        <li key={group}> <a href='#'> {group} </a> </li>
+                        <li key={group} onClick={() => { getGroupData(group) }}> <a href='#'> {group} </a> </li>
                     )
                 })}
             </ul>

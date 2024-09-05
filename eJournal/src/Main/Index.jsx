@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import AddGroup from '../assets/js/AddGroup';
 import Dropdown from '../assets/js/Dropdown';
+import Group from '../assets/js/Group';
 import { backend } from '../assets/template';
 import Login from '../Auth/Login';
 import './index.css';
@@ -51,7 +52,7 @@ const Index = () => {
             </div>
             <div className='content-part'>
                 {openGroupMenu && (
-                    <AddGroup message={{ username: userData.username, groups: userData.groups || '' }} />
+                    <Group message={{ groupName: openGroupMenu.name, data: openGroupMenu.data }} />
                 )}
             </div>
         </main>

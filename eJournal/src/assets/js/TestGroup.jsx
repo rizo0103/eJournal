@@ -1,35 +1,37 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
+import { backend } from '../template';
 
 const TestGroup = () => {
-    const [ groups, setGroups ] = useState('');
-    const [ group, setGroup ] = useState('');
+    const [ fName, setFName ] = useState('');
+    const [ lName, setLName ] = useState('');
 
-    const submit = () => {
-        fetch (`http://localhost:5174/add-groups`, {
+    const onSubmit = (e)  => {
+        e.preventDefault();
+
+        fetch(`${backend}add-student`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'table-name': '1a-1',
             },
             body: JSON.stringify({
-                username: 'mdrizo',
-                groups: groups,
-            }),
-        })
-        .then(res => res.json())
-        .then(data => console.log(data.data))
-        .catch(err => console.error(err));
-    };
+                fName: fName,
+                lName: lName,
+                presentDays: {},
+            })
+        })        
+    }
 
     return (
-        <div style={{display: 'grid', color: 'white', justifyContent: 'center', alignContent: 'center',}}>
-            <br /> <input onChange={(e) => { setGroup(e.target.value) }} />
-            <br /> <button onClick={() => { setGroups(groups + ' ' + group) }}>Add</button>
-            <br /> <textarea value={groups || ''} onChange={() => {}} />
-            <br /> <button onClick={() => setGroups('')}> Clear </button>
-            <br /> <button onClick={submit}> Submit </button> 
-        </div>
-    );
+        <form className='main-form' onSubmit={onSubmit}>
+            <div style={{ textAlign: 'center' }}>
+                <input placeholder='fName' onChange={(e) => { setFName(e.target.value) }} /> <br />
+                <input placeholder='lName' onChange={(e) => { setLName(e.target.value) }} /> <br />
+                <button className='submit-btn'> submit </button>
+            </div>
+        </form>
+    )
 };
 
 export default TestGroup;
