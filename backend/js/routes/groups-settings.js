@@ -22,14 +22,21 @@ router.get('/get-group-data', (req, res) => {
 router.post('/add-student', (req, res) => {
     const table = req.headers['table-name'];
     const { fName, lName, presentDays } = req.body;
+    // const fName = 'rizo';
+    // const lName = 'shokiri';
+    // const presentDays = {
+    //     semester1: {
+    //         september: [1, 2, 3],
+    //     },
+    // };
 
     if (!table || !fName || !lName || !presentDays) {
         return res.status(400).send('Missing required fields');
     }
 
-    const sql = `INSERT INTO \`${table}\` (fName, lName, presentDays) VALUES (?, ?, ?)`;
+    const sql = `INSERT INTO \`${table}\`(fName, lName, presentDays) VALUES ('${fName}', '${lName}', '${JSON.stringify(presentDays)}')`;
 
-    connection.query(sql, [fName, lName, presentDays], (error) => {
+    groups.query(sql, (error) => {
         if (error) {
             console.error('Request execution error: ', error);
             return res.status(500).send('Server error');
