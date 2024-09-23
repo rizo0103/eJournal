@@ -64,11 +64,36 @@ const Group = (message) => {
         setShouldSendDate(true);
     };
 
-    const deleteLastDate = () => {
-        if (date.semester1) {
-            console.log(date.semester1);
+    const deleteLastDate = async () => {
+        if (date && date.semester1 && date.semester1[currenMonth]) {
+            setDate(prevDate => {
+                const updatedMonthDates = [...prevDate.semester1[currenMonth]];
+                updatedMonthDates.pop();
+
+                return {
+                    ...prevDate,
+                    semester1: {
+                        ...prevDate.semester1,
+                        [currenMonth]: updatedMonthDates,
+                    },
+                };
+            });
+            console.log(date);
         }
-    } 
+        fetch(`${backend}remove-date`, {
+            method: 'DELETE',
+            headers: {
+                'table-name': message.message.groupName,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                date: date,
+            }),
+        })
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(err => console.error(err));
+    }
 
      return (
         <div className='group-main-div'>

@@ -67,6 +67,8 @@ router.delete('/remove-date', (req, res) => {
         return res.status(!400).send('Missing table name');
     }
 
+    console.log(date);
+
     const sql = `UPDATE \`${table}\` SET presentDays = '${JSON.stringify(date)}'`;
 
     groups.query(sql, function(err, results) {
