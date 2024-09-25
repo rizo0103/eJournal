@@ -170,7 +170,7 @@ input :focus {
       -webkit-transition: background-color 100ms linear;
       -ms-transition: background-color 100ms linear;
        transition: background-color 100ms linear;
-  }
+}
   
   .btn:focus, .btn.focus {
     outline: 0;

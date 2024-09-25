@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import '../css/group-table.css';
-import { backend } from '../template';
+import { backend, X, O } from '../template';
 
 const Group = (message) => {
     const [ date, setDate ] = useState(message.message.data[0].presentDays ? JSON.parse(message.message.data[0].presentDays) : null);
@@ -97,11 +97,13 @@ const Group = (message) => {
 
      return (
         <div className='group-main-div'>
-            <h1 className='group-name'> 초급 {message.message.groupName} </h1> <br />
-            <h1 className='group-name'>9월 2024년 </h1> <br />
-            <div style={{ display: 'flex', gap: '10px', width: '20%' }}>
-                <button className='btn btn-primary btn-round-1' onClick={addCurrentDate}> Add current date </button>
-                <button className='btn btn-danger btn-round-1' onClick={deleteLastDate}> Remove last date </button>
+            <div className='group-data'>
+                초급 {message.message.groupName} <br /> 
+                9월 2024년 
+            </div>
+            <div className='button-group'>
+                <button className='btn btn-primary btn-round-1 button' onClick={addCurrentDate}> Add current date </button>
+                <button className='btn btn-danger btn-round-1 button' onClick={deleteLastDate}> Remove last date </button>
             </div>
             <table border={1}>
                 <thead>
@@ -136,7 +138,7 @@ const Group = (message) => {
                                     const { day, present } = item;
 
                                     return (
-                                        <td key={day}> {present === false && ('-')} </td>
+                                        <td key={day}> {present === false && (<img className='ico' src={X} />)} </td>
                                     )
                                 })}
                             </tr>

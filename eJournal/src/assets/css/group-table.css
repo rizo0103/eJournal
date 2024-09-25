@@ -1,6 +1,6 @@
 .group-main-div {
     display: flex;
-    position: relative;
+    position: absolute;
     flex-direction: column;
     width: 100%;
     height: auto;
@@ -9,33 +9,77 @@
     align-content: center;
     align-items: center;
     gap: 1.5%;
+    margin-top: .5%;
 }
 
 .group-name {
     display: flex;
+    position: relative;
     box-shadow: none;
     height: 20px;
     filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
     margin: 0;
+    padding: 0;
 }
 
-.choose-data {
+/* .choose-data {
     display: flex;
     gap: 1.5%;
     border: 1px solid black;
     height: 20px;
-}
+} */
 
 table {
-    width: 50%;
+    position: relative;
+    width: calc(50%);
+    height: auto;
+    color: rgb(161, 151, 151);
+    border-color:grey;
+    font-weight: bold;
 }
 
-.add-date {
+/* .add-date {
     width: auto;
     height: 30px;
     font-size: large;
     border-radius: 10px;
     border: 1px solid rgb(116, 176, 255);
     background-color: transparent;
-    /* color: white; */
+    color: white;
+} */
+
+.group-data {
+    display: grid;
+    flex-direction: column;
+    /* border: 1px solid black; */
+    margin-bottom: 1%;
+    width: 150px;
+    height: auto;
+    gap: 15%;
+    font-size: 150%;
+    font-weight: bolder;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px; 
+    width: 350px; 
+    height: 25px; 
+    margin-bottom: 1.5%;
+    justify-content: center;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* width: 100px; */
+    height: 35px;
+}
+
+.ico {
+    display: flex;
+    width: 15px;
+    height: 15px;
+    margin: auto;
 }

@@ -5,12 +5,12 @@
     flex-direction: column;
     background: rgba(255, 255, 255, 0.1);
     position: absolute;
-    margin-top: 3vh;
-    margin-left: 5vh;
-    margin-bottom: 3vh;
-    margin-right: 5vh;
-    width: 30vh;
-    height: 90vh;
+    margin-top: 3%;
+    margin-left: 5%;
+    margin-bottom: 3%;
+    margin-right: 5%;
+    width: 15%;
+    height: 90%;
     align-items: center;
     color: rgb(161, 151, 151);
 
@@ -41,7 +41,7 @@
 .text-username {
     display: flex;
     position: relative;
-    margin-top: 2vh;
+    margin-top: 2%;
     font-size: large;
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     filter: drop-shadow(0 10px 5px rgba(0, 0, 0, 2));
@@ -49,16 +49,17 @@
 }
 
 .content-part {
+    /* border: 10px solid black; */
     display: flex;
     position: absolute;
     box-shadow: -10px 5px 5px rgba(0, 0, 0, 0.5);
     background: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
-    width: 150vh;
-    height: 90vh;
-    margin-left: 40vh;
-    margin-top: 3vh;
-    margin-right: 5vh;
+    width: 75%;
+    min-height: 90%;
+    margin-left: 22%;
+    margin-top: 3%;
+    margin-right: 5%;
 
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px); 
