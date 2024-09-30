@@ -3,3 +3,7 @@ export const img_dir = '../../../backend/images/';
 export const backend = 'http://localhost:5174/';
 export const O = '../../public/images/O.png';
 export const X = '../../public/images/X.png';
+
+export const findStudent = (students, fName, lName) => {
+    return students.filter(item => item.fName === fName && lName === item.lName)[0].id;
+}

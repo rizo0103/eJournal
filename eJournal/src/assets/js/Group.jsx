@@ -1,13 +1,14 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import '../css/group-table.css';
-import { backend, X, O } from '../template';
+import { backend, X, O, findStudent } from '../template';
 
 const Group = (message) => {
     const [ date, setDate ] = useState(message.message.data[0].presentDays ? JSON.parse(message.message.data[0].presentDays) : null);
     const [ shouldSendDate, setShouldSendDate ] = useState(false);
     const [ currenMonth, setCurrentMonth ] = useState('september');
     const [ flag, setFlag ] = useState(false);
+    const [ ico, setIco ] = useState(true);
     
     useEffect(() => {
         if (message.message.data[0].presentDays) {
@@ -98,7 +99,7 @@ const Group = (message) => {
      return (
         <div className='group-main-div'>
             <div className='group-data'>
-                초급 {message.message.groupName} <br /> 
+                초급 {message.message.groupName} <br />
                 9월 2024년 
             </div>
             <div className='button-group'>
@@ -137,8 +138,18 @@ const Group = (message) => {
                                 {flag && date && date.semester1 && date.semester1[currenMonth] && date.semester1[currenMonth].map(item => {
                                     const { day, present } = item;
 
+                                    function changePresentence() {
+                                        item.present = !item.present;
+                                        
+                                        setIco(!ico);
+
+                                        console.log(findStudent([data], fName, lName));
+                                    }
+
                                     return (
-                                        <td key={day}> {present === false && (<img className='ico' src={X} />)} </td>
+                                        <td key={day} onClick={changePresentence}> 
+                                            {item.present == false ? (<img className='ico' src={X} />) : (<img className='ico' src={O} />)} 
+                                        </td>
                                     )
                                 })}
                             </tr>
