@@ -47,7 +47,7 @@ const Index = () => {
                 <div className='div-square-avatar'>
                     <img className='square-avatar' src={`images/${userData.avatar}`} />
                 </div>
-                <div className='text-username'>{userData.username}</div>
+                <div className='text-username'>{userData.fName} {userData.lName}</div>
                 <Dropdown message={userData.groups} sendData={handleDataFromChild} />
             </div>
             <div className='content-part'>
