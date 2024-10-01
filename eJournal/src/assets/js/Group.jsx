@@ -7,6 +7,7 @@ const Group = (message) => {
     const [date, setDate] = useState(message.message.data[0].presentDays ? JSON.parse(message.message.data[0].presentDays) : null);
     const [shouldSendDate, setShouldSendDate] = useState(false);
     const [currenMonth, setCurrentMonth] = useState('september');
+    const [state, setState] = useState(false);
     const [flag, setFlag] = useState(false);
     const students = message.message.data;
     
@@ -95,6 +96,10 @@ const Group = (message) => {
         .catch(err => console.error(err));
     }
 
+    const updateComponent = () => {
+        setState(!state);
+    }
+
     return (
         <div className='group-main-div'>
             <div className='group-data'>
@@ -107,8 +112,8 @@ const Group = (message) => {
             </div>
             <table border={1}>
                 <thead>
-                    <tr style={{ width: '10%' }}>
-                        <th style={{ width: '1%' }}> id </th>
+                    <tr>
+                        <th> id </th>
                         <th> Full Name </th>
                         <th> 성 명 </th>
                         {date.semester1[currenMonth].map(item => {
@@ -129,14 +134,18 @@ const Group = (message) => {
 
                         return (
                             <tr key={id}> 
-                                <td> {id} </td>
-                                <td style={{ width: '200px' }}> {lName} {fName} </td>
+                                <td style={{ width: '020px' }}> {id} </td>
+                                <td style={{ width: '250px' }}> {lName} {fName} </td>
                                 <td style={{ width: '250px' }}> null </td>
                                 { presentDays.semester1[currenMonth].map(element => {
                                     const { day, present } = element;
 
                                     return (
-                                        <td key={day} onClick={() => console.log('Hello', fName) } style={{ width: '15px' }}> {!present && <img className='ico' src={X} />} </td>
+                                        <td key={day} onClick={() => {
+                                            element.present = !element.present;
+                                            console.log(element.present);
+                                            updateComponent();
+                                        }} style={{ width: '25px' }}> {!element.present ? <img className='ico' src={X} /> : <img className='ico' src={O} />} </td>
                                     )
                                 })}
                             </tr>
