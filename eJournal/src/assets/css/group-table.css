@@ -31,7 +31,6 @@
 
 table {
     position: relative;
-    width: calc(50%);
     height: auto;
     color: rgb(161, 151, 151);
     border-color:grey;

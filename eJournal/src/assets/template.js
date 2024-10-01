@@ -5,5 +5,5 @@ export const O = '../../public/images/O.png';
 export const X = '../../public/images/X.png';
 
 export const findStudent = (students, fName, lName) => {
-    return students.filter(item => item.fName === fName && lName === item.lName)[0].id;
+    return (students.findIndex(item => item.fName === fName && lName === item.lName), students);
 }

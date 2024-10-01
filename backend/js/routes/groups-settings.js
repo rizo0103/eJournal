@@ -59,7 +59,7 @@ router.post('/add-date', (req, res) => {
     });
 });
 
-router.delete('/remove-date', (req, res) => {
+router.post('/remove-date', (req, res) => {
     const table = req.headers['table-name'];
     const { date } = req.body;
 
