@@ -80,4 +80,25 @@ router.post('/remove-date', (req, res) => {
     });
 });
 
+router.post('/change-presentence', async (req, res) => {
+    const table = req.headers['table-name'];
+    const { id, date } = req.body;
+
+    if (!table) {
+        return res.status(400).send('Missing table name');
+    }
+
+    const sql = `UPDATE \`${table}\` SET presentDays = ? WHERE id = ?`;
+
+    groups.query(sql, [JSON.stringify(date), id], function(err, results) {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ message: 'Server error' });    
+        }
+
+        return res.status(200).json({ message: 'Table updated successfully', data: results });
+    });
+});
+
+
 module.exports = router;

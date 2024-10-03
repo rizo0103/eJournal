@@ -25,6 +25,7 @@ const Index = () => {
             .then(res => res.json())
             .then(data => {
                 setUserData(data.data[0])
+                console.log(data.data, "SERVER DATA")
             })
             .catch(err => {
                 console.error(err);
