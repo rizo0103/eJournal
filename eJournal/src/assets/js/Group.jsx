@@ -138,7 +138,6 @@ const Group = (message) => {
         });
 
 
-        console.log("PRESENTDAYS", presentDays)
         fetch(`${backend}change-presentence`, {
             method: 'POST',
             headers: {
