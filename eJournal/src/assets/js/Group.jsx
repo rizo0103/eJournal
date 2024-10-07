@@ -8,6 +8,7 @@ const Group = (message) => {
     const [shouldSendDate, setShouldSendDate] = useState(false);
     const [currenMonth, setCurrentMonth] = useState('september');
     const [flag, setFlag] = useState(false);
+    const [ test, setTest ] = useState({});
     const [students, setStudents] = useState(message.message.data.map(student => ({
         ...student,
         presentDays: student.presentDays ? JSON.parse(student.presentDays) : {}
@@ -98,74 +99,64 @@ const Group = (message) => {
         .catch(err => console.error(err));
     }
 
-    const togglePresent = (studentId, day, presentDays) => {
+    const togglePresent = async (studentId, day) => {
         setStudents(prevStudents => prevStudents.map(student => {
             if (student.id === studentId) {
                 const updatedSemester1 = { ...student.presentDays.semester1 };
-
-                updatedSemester1[currenMonth] = updatedSemester1[currenMonth].map(dateItem => {
-
-                    if (dateItem.day === day) {
-                        
-                        if (dateItem.present === false) {
-                            return { ...dateItem, present: true };
-                        } else {
-                            return { ...dateItem, present: false };
-                        }
-                    }
-
-                    return dateItem;
-                });
-
+                updatedSemester1[currenMonth] = updatedSemester1[currenMonth].map(dateItem => 
+                    dateItem.day === day ? { ...dateItem, present: !dateItem.present } : dateItem
+                );
                 return { ...student, presentDays: { ...student.presentDays, semester1: updatedSemester1 } };
             }
-
             return student;
         }));
-
+    
         setDate(prevDate => {
             const updatedSemester1 = { ...prevDate.semester1 };
-            
-            updatedSemester1[currenMonth] = updatedSemester1[currenMonth].map(dateItem => {
-                if (dateItem.day === day) {
-                    return { ...dateItem, present: !dateItem.present };
-                }
-                
-                return dateItem;
-            });
-
+            updatedSemester1[currenMonth] = updatedSemester1[currenMonth].map(dateItem => 
+                dateItem.day === day ? { ...dateItem, present: !dateItem.present } : dateItem
+            );
             return { ...prevDate, semester1: updatedSemester1 };
         });
-
-
-        fetch(`${backend}change-presentence`, {
-            method: 'POST',
-            headers: {
-                'table-name': message.message.groupName,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: studentId,
-                date: presentDays,
-            })
-        })
-        .then(res => res.json())
-        .then(data => console.log(data))
-        .catch(error => console.log(error));
+    
+        const updatedStudent = students.find(student => student.id === studentId);
+        const updatedPresentDays = { ...updatedStudent.presentDays };
+        updatedPresentDays.semester1[currenMonth] = updatedPresentDays.semester1[currenMonth].map(dateItem => 
+            dateItem.day === day ? { ...dateItem, present: !dateItem.present } : dateItem
+        );
+    
+        try {
+            const response = await fetch(`${backend}change-presentence`, {
+                method: 'POST',
+                headers: {
+                    'table-name': message.message.groupName,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: studentId,
+                    date: updatedPresentDays,
+                }),
+            });
+            const data = await response.json();
+            setTest(data);
+    
+            const groupDataResponse = await fetch(`${backend}get-group-data`, {
+                method: 'GET',
+                headers: {
+                    'table-name': message.message.groupName,
+                },
+            });
+            const groupData = await groupDataResponse.json();
+            setStudents(groupData.data.map(student => ({
+                ...student,
+                presentDays: student.presentDays ? JSON.parse(student.presentDays) : {},
+            })));
+        } catch (error) {
+            console.log(error);
+        }
     };
+    
 
-    function testBeck() {
-        
-        fetch(`${backend}get-group-data`, {
-            method: 'GET',
-            headers: {
-                'table-name': '1a-1',
-            },
-        })
-        .then(res => res.json())
-        .then(data => console.log(data.data))
-        .catch(err => console.error(err));
-    }
     return (
         <div className='group-main-div'>
             <div className='group-data'>
@@ -175,7 +166,6 @@ const Group = (message) => {
             <div className='button-group'>
                 <button className='btn btn-primary btn-round-1 button' onClick={addCurrentDate}> Add current date </button>
                 <button className='btn btn-danger btn-round-1 button' onClick={deleteLastDate}> Remove last date </button>
-                <button onClick={testBeck}> Click </button>
             </div>
             <table border={1} style={{ width: '50%' }}>
                 <thead>
@@ -207,8 +197,8 @@ const Group = (message) => {
                                     const { day, present } = element;
 
                                     return (
-                                        <td key={day} onClick={() => togglePresent(id, day, presentDays)} style={{ width: '25px' }}>
-                                            {!element.present ? <img className='ico' src={X} alt="X" /> : <img className='ico' src={O} alt="O" />}
+                                        <td key={day} onClick={async () => { togglePresent(id, day, presentDays) }} style={{ width: '25px' }}>
+                                            {!present ? <img className='ico' src={X} alt="X" /> : <img className='ico' src={O} alt="O" />}
                                         </td>
                                     )
                                 })}
