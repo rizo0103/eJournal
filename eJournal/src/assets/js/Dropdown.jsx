@@ -54,7 +54,7 @@ const Dropdown = ({ message, sendData }) => {
                 </li> */}
                 {groups.map(group => {
                     return (
-                        <li key={group} onClick={() => { getGroupData(group) }}> <a href='#'> {group} </a> </li>
+                        <li key={group} onClick={() => { getGroupData(group) }} style={{ cursor: 'pointer' }}> <a> {group} </a> </li>
                     )
                 })}
             </ul>

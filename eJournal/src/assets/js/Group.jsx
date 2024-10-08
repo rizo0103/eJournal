@@ -7,20 +7,10 @@ const Group = (message) => {
     const [date, setDate] = useState(message.message.data[0].presentDays ? JSON.parse(message.message.data[0].presentDays) : null);
     const [shouldSendDate, setShouldSendDate] = useState(false);
     const [currenMonth, setCurrentMonth] = useState('september');
-    const [flag, setFlag] = useState(false);
-    const [ test, setTest ] = useState({});
     const [students, setStudents] = useState(message.message.data.map(student => ({
         ...student,
         presentDays: student.presentDays ? JSON.parse(student.presentDays) : {}
     })));
-
-    useEffect(() => {
-        if (message.message.data[0].presentDays) {
-            setFlag(true);
-        } else {
-            setFlag(false);
-        }
-    }, [message.message.data]);
 
     useEffect(() => {
         if (shouldSendDate) {
@@ -137,8 +127,6 @@ const Group = (message) => {
                     date: updatedPresentDays,
                 }),
             });
-            const data = await response.json();
-            setTest(data);
     
             const groupDataResponse = await fetch(`${backend}get-group-data`, {
                 method: 'GET',
