@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import '../css/add-group.css';
 import { backend } from '../template';
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddGroup = ({ message }) => {
     const [ groups, setGroups ] = useState('');

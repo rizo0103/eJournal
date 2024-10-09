@@ -1,17 +1,38 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../css/group-table.css';
 import { backend, X, O, getGroupData, months } from '../template';
 
 const Group = (message) => {
     const [date, setDate] = useState(message.message.data[0].presentDays ? JSON.parse(message.message.data[0].presentDays) : null);
-    const [neededMonth, setNeededMonth] = useState('september');
+    const [neededMonth, setNeededMonth] = useState(0);
+    const [neededSemester, setNeededSemester] = useState('semester1');
     const [students, setStudents] = useState(message.message.data.map(student => ({
         ...student,
         presentDays: student.presentDays ? JSON.parse(student.presentDays) : {}
     })));
 
-    const addCurrentDate = async() => {
+    useEffect(() => {
+        const month = new Date().getMonth();
+        
+        if ([8, 9, 10, 11, 1, 2, 3, 4].includes(month)) {
+            setNeededMonth(months[month]);
+        } else {
+            if ('semester1' in date) {
+                setNeededMonth('september');
+            } else {
+                setNeededMonth('february');
+            }
+        }
+
+        if (month >= 8 && month <= 11) {
+            setNeededSemester('semester1');
+        } else if (month >= 1 && month <= 5) {
+            setNeededSemester('semester2');
+        }
+    }, [date]);
+
+    const addCurrentDate = async () => {
         const currentDate = new Date();
         const currentDay = currentDate.getDate();
         const currentMonth = currentDate.getMonth();
@@ -23,7 +44,11 @@ const Group = (message) => {
         }
 
         try {
-            setDate(date['semester1'][neededMonth].push({day: currentDay, present: false}));
+            if (!(neededMonth in date[neededSemester])) {
+                setDate(Object.assign(date[neededSemester], {[neededMonth]: []}));
+            }
+
+            setDate(date[neededSemester][neededMonth].push({day: currentDay, present: false}));
     
             const dateResponse = await fetch(`${backend}add-date`, {
                 method: 'POST',
@@ -50,7 +75,7 @@ const Group = (message) => {
     };
 
     const deleteLastDate = async () => {
-        setDate(date['semester1'][neededMonth].pop());
+        setDate(date[neededSemester][neededMonth].pop());
 
         try {
             const dateResponse = await fetch(`${backend}remove-date`, {
@@ -80,26 +105,29 @@ const Group = (message) => {
     const togglePresent = async (studentId, day) => {
         setStudents(prevStudents => prevStudents.map(student => {
             if (student.id === studentId) {
-                const updatedSemester1 = { ...student.presentDays.semester1 };
+                const updatedSemester1 = { ...student.presentDays[neededSemester] };
                 updatedSemester1[neededMonth] = updatedSemester1[neededMonth].map(dateItem => 
                     dateItem.day === day ? { ...dateItem, present: !dateItem.present } : dateItem
                 );
-                return { ...student, presentDays: { ...student.presentDays, semester1: updatedSemester1 } };
+                return { ...student, presentDays: { ...student.presentDays, [neededSemester]: updatedSemester1 } };
             }
             return student;
         }));
     
         setDate(prevDate => {
-            const updatedSemester1 = { ...prevDate.semester1 };
+            const updatedSemester1 = { ...prevDate[neededSemester] };
+        
             updatedSemester1[neededMonth] = updatedSemester1[neededMonth].map(dateItem => 
                 dateItem.day === day ? { ...dateItem, present: !dateItem.present } : dateItem
             );
-            return { ...prevDate, semester1: updatedSemester1 };
+        
+            return { ...prevDate, [neededSemester]: updatedSemester1 };
         });
     
         const updatedStudent = students.find(student => student.id === studentId);
         const updatedPresentDays = { ...updatedStudent.presentDays };
-        updatedPresentDays.semester1[neededMonth] = updatedPresentDays.semester1[neededMonth].map(dateItem => 
+        
+        updatedPresentDays[neededSemester][neededMonth] = updatedPresentDays[neededSemester][neededMonth].map(dateItem => 
             dateItem.day === day ? { ...dateItem, present: !dateItem.present } : dateItem
         );
     
@@ -132,8 +160,14 @@ const Group = (message) => {
     return (
         <div className='group-main-div'>
             <div className='group-data'>
-                초급 {message.message.groupName} <br />
-                {months.findIndex(item => item === neededMonth) + 1}월 2024년 
+                <div> 초급 {message.message.groupName} </div>
+                <div style={{ display: 'flex' }}> 
+                    <div style={{ display: 'grid', alignContent: 'center' }}> 
+                        <button style={{ background: 'transparent', border: 'transparent', cursor: 'pointer' }}> <img style={{ width: '15px', transform: 'rotate(360deg)' }} src='./images/top.png' /> </button> 
+                        <button style={{ background: 'transparent', border: 'transparent', cursor: 'pointer' }}> <img style={{ width: '15px', transform: 'rotate(180deg)' }} src='./images/top.png' /> </button> 
+                    </div>
+                    <div> {months.findIndex(item => item === neededMonth) + 1}월 2024년 </div>
+                </div>
             </div>
             <div className='button-group'>
                 <button className='btn btn-primary btn-round-1 button' onClick={addCurrentDate}> Add current date </button>
@@ -145,7 +179,7 @@ const Group = (message) => {
                         <th> id </th>
                         <th> Full Name </th>
                         <th> 성 명 </th>
-                        {date && date.semester1 && date.semester1[neededMonth] && date.semester1[neededMonth].map(item => {
+                        {date && date[neededSemester] && date[neededSemester][neededMonth] && date[neededSemester][neededMonth].map(item => {
                             const { day } = item;
 
                             return <th key={day}> {day} </th>
@@ -161,7 +195,7 @@ const Group = (message) => {
                                 <td style={{ width: '20px' }}> {id} </td>
                                 <td style={{ width: '250px' }}> {fName} {lName} </td>
                                 <td style={{ width: '250px' }}> null </td>
-                                { presentDays.semester1 && presentDays.semester1[neededMonth] && presentDays.semester1[neededMonth].map(element => {
+                                { presentDays[neededSemester] && presentDays[neededSemester][neededMonth] && presentDays[neededSemester][neededMonth].map(element => {
                                     const { day, present } = element;
 
                                     return (

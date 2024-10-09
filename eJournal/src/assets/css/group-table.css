@@ -52,9 +52,9 @@ table {
     flex-direction: column;
     /* border: 1px solid black; */
     margin-bottom: 1%;
-    width: 150px;
+    width: 170px;
     height: auto;
-    gap: 15%;
+    gap: 5%;
     font-size: 150%;
     font-weight: bolder;
 }
