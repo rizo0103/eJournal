@@ -1,15 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import '../css/group-table.css';
 import { backend, X, O, getGroupData, months } from '../template';
 
 const Group = (message) => {
-    const [date, setDate] = useState(message.message.data[0].presentDays ? JSON.parse(message.message.data[0].presentDays) : null);
+    const [date, setDate] = useState((message.message.data[0] && message.message.data[0].presentDays) ? JSON.parse(message.message.data[0].presentDays) : null);
     const [neededMonth, setNeededMonth] = useState(0);
     const [neededSemester, setNeededSemester] = useState('semester1');
     const [students, setStudents] = useState(message.message.data.map(student => ({
         ...student,
-        presentDays: student.presentDays ? JSON.parse(student.presentDays) : {}
+        presentDays: student.presentDays ? JSON.parse(student.presentDays) : null
     })));
 
     useEffect(() => {
@@ -27,10 +28,39 @@ const Group = (message) => {
 
         if (month >= 8 && month <= 11) {
             setNeededSemester('semester1');
-        } else if (month >= 1 && month <= 5) {
+        } else if (month >= 1 && month <= 4) {
             setNeededSemester('semester2');
         }
-    }, [date]);
+
+        async function fetchData() {
+            const groupData = await getGroupData(message.message.groupName);
+
+            if (groupData.data[0]) {
+                setDate(JSON.parse(groupData.data[0].presentDays));
+                setStudents(groupData.data.map(student => ({
+                    ...student,
+                    presentDays: student.presentDays ? JSON.parse(student.presentDays) : {},
+                })));
+            } else {
+                setDate([]);
+                setStudents([]);
+            }
+        }
+
+        fetchData();
+    }, [message.message.groupName]);
+
+    const up = () => {
+        if (neededMonth !== 'december' && neededMonth !== 'may') {
+            setNeededMonth(months[months.findIndex(item => item === neededMonth) + 1]);
+        }
+    };
+
+    const down = () => {
+        if (neededMonth !== 'september' && neededMonth !== 'february') {
+            setNeededMonth(months[months.findIndex(item => item === neededMonth) - 1]);
+        }
+    }
 
     const addCurrentDate = async () => {
         const currentDate = new Date();
@@ -44,6 +74,11 @@ const Group = (message) => {
         }
 
         try {
+            
+            if (!(neededSemester in date)) {
+                setDate(Object.assign(date, {[neededSemester]: {}}));
+            }
+            
             if (!(neededMonth in date[neededSemester])) {
                 setDate(Object.assign(date[neededSemester], {[neededMonth]: []}));
             }
@@ -69,14 +104,16 @@ const Group = (message) => {
                 presentDays: student.presentDays ? JSON.parse(student.presentDays) : {},
             })));
 
+            console.log({date: date, neededMonth: neededMonth});
+            
         } catch (error) {
             console.error(error);
         }
     };
-
+    
     const deleteLastDate = async () => {
         setDate(date[neededSemester][neededMonth].pop());
-
+        
         try {
             const dateResponse = await fetch(`${backend}remove-date`, {
                 method: 'POST',
@@ -163,8 +200,8 @@ const Group = (message) => {
                 <div> 초급 {message.message.groupName} </div>
                 <div style={{ display: 'flex' }}> 
                     <div style={{ display: 'grid', alignContent: 'center' }}> 
-                        <button style={{ background: 'transparent', border: 'transparent', cursor: 'pointer' }}> <img style={{ width: '15px', transform: 'rotate(360deg)' }} src='./images/top.png' /> </button> 
-                        <button style={{ background: 'transparent', border: 'transparent', cursor: 'pointer' }}> <img style={{ width: '15px', transform: 'rotate(180deg)' }} src='./images/top.png' /> </button> 
+                        <button onClick={up} style={{ background: 'transparent', border: 'transparent', cursor: 'pointer' }}> <img style={{ width: '15px', transform: 'rotate(360deg)' }} src='./images/top.png' /> </button> 
+                        <button onClick={down} style={{ background: 'transparent', border: 'transparent', cursor: 'pointer' }}> <img style={{ width: '15px', transform: 'rotate(180deg)' }} src='./images/top.png' /> </button> 
                     </div>
                     <div> {months.findIndex(item => item === neededMonth) + 1}월 2024년 </div>
                 </div>

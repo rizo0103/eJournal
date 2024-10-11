@@ -13,7 +13,7 @@ const TestGroup = () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'table-name': '1a-1',
+                'table-name': '1a-2',
             },
             body: JSON.stringify({
                 fName: fName,

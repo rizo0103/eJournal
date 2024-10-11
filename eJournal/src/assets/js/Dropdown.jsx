@@ -16,9 +16,8 @@ const Dropdown = ({ message, sendData }) => {
         }
     }
 
-    const getGroupData = (group) => {
-
-        fetch(`${backend}get-group-data`, {
+    const getGroupData = async (group) => {
+        await fetch(`${backend}get-group-data`, {
             method: 'GET',
             headers: {
                 'table-name': group,
