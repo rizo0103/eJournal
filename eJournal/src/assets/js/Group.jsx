@@ -68,43 +68,75 @@ const Group = (message) => {
         const currentMonth = currentDate.getMonth();
 
         if (months[currentMonth] !== neededMonth) {
-            return (
-                <h1>Hello</h1>
-            );
+            return;
         }
 
         try {
-            
-            if (!(neededSemester in date)) {
-                setDate(Object.assign(date, {[neededSemester]: {}}));
-            }
-            
-            if (!(neededMonth in date[neededSemester])) {
-                setDate(Object.assign(date[neededSemester], {[neededMonth]: []}));
-            }
+            let newDate = { ...date };
+            let newStudents = [...students];
 
-            setDate(date[neededSemester][neededMonth].push({day: currentDay, present: false}));
-    
-            const dateResponse = await fetch(`${backend}add-date`, {
+            if (!(neededSemester in newDate)) {
+                newDate[neededSemester] = {};
+                newStudents = newStudents.map(student => ({
+                    ...student,
+                    presentDays: {
+                        ...student.presentDays,
+                        [neededSemester]: {}
+                    }
+                }));
+            }
+            
+            if (!(neededMonth in newDate[neededSemester])) {
+                newDate[neededSemester][neededMonth] = [];
+                newStudents = newStudents.map(student => ({
+                    ...student,
+                    presentDays: {
+                        ...student.presentDays,
+                        [neededSemester]: {
+                            ...student.presentDays[neededSemester],
+                            [neededMonth]: []
+                        }
+                    }
+                }));
+            }
+            
+            newDate[neededSemester][neededMonth].push({day: currentDay, present: false});
+            newStudents = newStudents.map(student => ({
+                ...student,
+                presentDays: {
+                    ...student.presentDays,
+                    [neededSemester]: {
+                        ...student.presentDays[neededSemester],
+                        [neededMonth]: [
+                            ...student.presentDays[neededSemester][neededMonth],
+                            { day: currentDay, present: false }
+                        ]
+                    }
+                }
+            }));
+
+            setDate(newDate);
+            setStudents(newStudents);
+
+            const dateResponse = await fetch(`${backend}change-dates`, {
                 method: 'POST',
                 headers: {
                     'table-name': message.message.groupName,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    date: date,
-                })
-            })
+                    students: newStudents,
+                }),
+            });
 
+            const answer = await dateResponse.json();
             const groupData = await getGroupData(message.message.groupName);
 
-            setDate(JSON.parse(groupData.data[0].presentDays));
+            setDate(JSON.parse(groupData.students[0].presentDays));
             setStudents(groupData.data.map(student => ({
                 ...student,
                 presentDays: student.presentDays ? JSON.parse(student.presentDays) : {},
             })));
-
-            console.log({date: date, neededMonth: neededMonth});
             
         } catch (error) {
             console.error(error);
@@ -112,20 +144,26 @@ const Group = (message) => {
     };
     
     const deleteLastDate = async () => {
-        setDate(date[neededSemester][neededMonth].pop());
+        let newDate = { ...date };
+        newDate[neededSemester][neededMonth].pop();
+        for (let i in students) {
+            students[i].presentDays[neededSemester][neededMonth].pop();
+        }
+
+        setDate(newDate);
         
         try {
-            const dateResponse = await fetch(`${backend}remove-date`, {
+            const dateResponse = await fetch(`${backend}change-dates`, {
                 method: 'POST',
                 headers: {
                     'table-name': message.message.groupName,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    date: date,
+                    students: students,
                 }),
-            })
-    
+            });
+
             const groupData = await getGroupData(message.message.groupName);
 
             setDate(JSON.parse(groupData.data[0].presentDays));
@@ -133,6 +171,7 @@ const Group = (message) => {
                 ...student,
                 presentDays: student.presentDays ? JSON.parse(student.presentDays) : {},
             })));
+
 
         } catch (error) {
             console.error(error);
@@ -188,7 +227,8 @@ const Group = (message) => {
                 ...student,
                 presentDays: student.presentDays ? JSON.parse(student.presentDays) : {},
             })));
-            
+            setNeededMonth(months(groupData));
+
         } catch (error) {
             console.log(error);
         }
@@ -236,7 +276,7 @@ const Group = (message) => {
                                     const { day, present } = element;
 
                                     return (
-                                        <td key={day} onClick={async () => { togglePresent(id, day, presentDays) }} style={{ width: '25px' }}>
+                                        <td key={day} onClick={async () => { togglePresent(id, day) }} style={{ width: '25px' }}>
                                             {!present ? <img className='ico' src={X} alt="X" /> : <img className='ico' src={O} alt="O" />}
                                         </td>
                                     )

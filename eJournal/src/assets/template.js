@@ -1,8 +1,8 @@
 // export const defaultAvatar = 'https://static.vecteezy.com/system/resources/thumbnails/025/337/669/small_2x/default-male-avatar-profile-icon-social-media-chatting-online-user-free-vector.jpg';
 export const img_dir = '../../../backend/images/';
 export const backend = 'http://localhost:5174/';
-export const O = '../../public/images/O.png';
-export const X = '../../public/images/X.png';
+export const O = './images/O.png';
+export const X = './images/X.png';
 export const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
 export async function getGroupData (groupName) {
@@ -25,6 +25,12 @@ export async function getGroupData (groupName) {
 /*
 {
     "semester1": {
+        "october": [
+            {
+                "day": 9,
+                "present": false
+            }
+        ],
         "september": [
             {
                 "day": 13,
@@ -42,3 +48,12 @@ export async function getGroupData (groupName) {
     }
 }
 */
+
+const obj = {};
+
+const test = 1;
+
+obj[test] = [];
+obj[test].push(..."Hello, World");
+
+console.log(obj);

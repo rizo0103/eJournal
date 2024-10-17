@@ -38,46 +38,28 @@ router.post('/add-student', (req, res) => {
     });
 });
 
-router.post('/add-date', (req, res) => {
+router.post('/change-dates', async (req, res) => {
     const table = req.headers['table-name'];
-    const { date } = req.body;
-
-    console.log(date);
+    const { students } = req.body;
 
     if (!table) {
         return res.status(400).send('Missing required fields');
     }
 
-    const sql = `UPDATE \`${table}\` SET presentDays = '${JSON.stringify(date)}'`;
+    try {
+        const updatePromises = students.map(student => {
+            const sql = `UPDATE \`${table}\` SET presentDays = ? WHERE id = ?`;
+            const params = [JSON.stringify(student.presentDays), student.id];
+            return groups.query(sql, params);
+        });
 
-    groups.query(sql, function(err, results) {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({ message: 'Server error' });
-        }
-        return res.status(200).json({ message: 'Table updated successfully', data: results });
-    });
-});
+        await Promise.all(updatePromises);
 
-router.post('/remove-date', (req, res) => {
-    const table = req.headers['table-name'];
-    const { date } = req.body;
-
-    if (!table) {
-        return res.status(!400).send('Missing table name');
+        return res.status(200).json({ message: 'Table updated successfully', students: students });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'Server error' });
     }
-
-    console.log(date);
-
-    const sql = `UPDATE \`${table}\` SET presentDays = '${JSON.stringify(date)}'`;
-
-    groups.query(sql, function(err, results) {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({ message: 'Server error' });
-        }
-        return res.status(200).json({ message: 'Table updated successfully', data: results });
-    });
 });
 
 router.post('/change-presentence', async (req, res) => {
