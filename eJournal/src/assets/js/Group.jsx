@@ -62,97 +62,34 @@ const Group = (message) => {
         }
     }
 
-    const addCurrentDate = async () => {
-        const currentDate = new Date();
-        const currentDay = currentDate.getDate();
-        const currentMonth = currentDate.getMonth();
+    const addOrRemoveDate = async (atr) => {
+        const currentDate = new Date(), currentDay = currentDate.getDate(), currentMonth = currentDate.getMonth();
 
-        if (months[currentMonth] !== neededMonth) {
-            return;
-        }
+        if (months[currentMonth] !== neededMonth) return ;
 
         try {
-            let newDate = { ...date };
-            let newStudents = [...students];
-
-            if (!(neededSemester in newDate)) {
-                newDate[neededSemester] = {};
-                newStudents = newStudents.map(student => ({
-                    ...student,
-                    presentDays: {
-                        ...student.presentDays,
-                        [neededSemester]: {}
-                    }
-                }));
-            }
-            
-            if (!(neededMonth in newDate[neededSemester])) {
-                newDate[neededSemester][neededMonth] = [];
-                newStudents = newStudents.map(student => ({
-                    ...student,
-                    presentDays: {
-                        ...student.presentDays,
-                        [neededSemester]: {
-                            ...student.presentDays[neededSemester],
-                            [neededMonth]: []
-                        }
-                    }
-                }));
-            }
-            
-            newDate[neededSemester][neededMonth].push({day: currentDay, present: false});
-            newStudents = newStudents.map(student => ({
-                ...student,
-                presentDays: {
-                    ...student.presentDays,
-                    [neededSemester]: {
-                        ...student.presentDays[neededSemester],
-                        [neededMonth]: [
-                            ...student.presentDays[neededSemester][neededMonth],
-                            { day: currentDay, present: false }
-                        ]
+            if (atr === 'add') {
+                if (!(neededSemester in date)) {
+                    for (let i in students) {
+                        students[i].presentDays[`${neededSemester}`] = {}
                     }
                 }
-            }));
-
-            setDate(newDate);
-            setStudents(newStudents);
-
-            const dateResponse = await fetch(`${backend}change-dates`, {
-                method: 'POST',
-                headers: {
-                    'table-name': message.message.groupName,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    students: newStudents,
-                }),
-            });
-
-            const answer = await dateResponse.json();
-            const groupData = await getGroupData(message.message.groupName);
-
-            setDate(JSON.parse(groupData.students[0].presentDays));
-            setStudents(groupData.data.map(student => ({
-                ...student,
-                presentDays: student.presentDays ? JSON.parse(student.presentDays) : {},
-            })));
+                
+                if (!(neededMonth in date[neededSemester])) {
+                    for (let i in students) {
+                        students[i].presentDays[neededSemester][neededMonth] = [];
+                    }
+                }
+                
+                for (let i in students) {
+                    students[i].presentDays[neededSemester][neededMonth].push({ day: currentDay, present: false });
+                }
+            } else {
+                for (let i in students) {
+                    students[i].presentDays[neededSemester][neededMonth].pop();
+                }
+            }
             
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    
-    const deleteLastDate = async () => {
-        let newDate = { ...date };
-        newDate[neededSemester][neededMonth].pop();
-        for (let i in students) {
-            students[i].presentDays[neededSemester][neededMonth].pop();
-        }
-
-        setDate(newDate);
-        
-        try {
             const dateResponse = await fetch(`${backend}change-dates`, {
                 method: 'POST',
                 headers: {
@@ -171,12 +108,11 @@ const Group = (message) => {
                 ...student,
                 presentDays: student.presentDays ? JSON.parse(student.presentDays) : {},
             })));
-
-
+            
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const togglePresent = async (studentId, day) => {
         setStudents(prevStudents => prevStudents.map(student => {
@@ -247,8 +183,8 @@ const Group = (message) => {
                 </div>
             </div>
             <div className='button-group'>
-                <button className='btn btn-primary btn-round-1 button' onClick={addCurrentDate}> Add current date </button>
-                <button className='btn btn-danger btn-round-1 button' onClick={deleteLastDate}> Remove last date </button>
+                <button className='btn btn-primary btn-round-1 button' onClick={() => addOrRemoveDate('add')}> Add current date </button>
+                <button className='btn btn-danger btn-round-1 button' onClick={() => addOrRemoveDate('delete')}> Remove last date </button>
             </div>
             <table border={1} style={{ width: '50%' }}>
                 <thead>

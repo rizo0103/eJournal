@@ -22,38 +22,3 @@ export async function getGroupData (groupName) {
     }
 };
 
-/*
-{
-    "semester1": {
-        "october": [
-            {
-                "day": 9,
-                "present": false
-            }
-        ],
-        "september": [
-            {
-                "day": 13,
-                "present": false
-            },
-            {
-                "day": 24,
-                "present": false
-            },
-            {
-                "day": 30,
-                "present": false
-            }
-        ]
-    }
-}
-*/
-
-const obj = {};
-
-const test = 1;
-
-obj[test] = [];
-obj[test].push(..."Hello, World");
-
-console.log(obj);

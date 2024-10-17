@@ -1,9 +1,14 @@
+const arr = [{
+    1: [1, 2, 3],
+    2: [1, 2, 3],
+}, {
+    1: [1, 2, 3],
+    2: [1, 2, 3],
+}];
 
-const obj = {};
+for (let i in arr) {
+    arr[i][3] = [];
+    arr[i][3].push({}, {});
+}
 
-const test = 1;
-
-obj[test] = [];
-obj[test].push(..."Hello, World");
-
-console.log(obj);
+console.log(arr);
